@@ -56,11 +56,4 @@ Fully mobile and desktop responsive with modern, gamified UI.
 
 ---
 
-**Super Admin Access:**
-- Email: tamilnaducubeassociation@gmail.com
-- Username: TNCA
-- Password: Tnca@600101
-
----
-
 *Built for Tamil Nadu Cube Association & Cubeskool* 
