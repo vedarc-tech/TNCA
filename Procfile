@@ -1,1 +1,1 @@
-web: cd backend && gunicorn --config gunicorn_config.py wsgi:app 
+web: gunicorn --config backend/gunicorn_config.py wsgi:app 
