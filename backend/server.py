@@ -29,8 +29,14 @@ load_dotenv()
 app = Flask(__name__)
 
 # Configuration
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', '905f1aaad4614cd226345cbc6f91cbb3f857bd18aa4d7234a9928897e2339d7f')
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'b8b96813b60e117594c1a8d2deb3fc791b74b7f7bfc937ccbb0a0ac37a1dfea0')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+
+# Validate required environment variables
+if not app.config['SECRET_KEY']:
+    raise ValueError("SECRET_KEY environment variable is required")
+if not app.config['JWT_SECRET_KEY']:
+    raise ValueError("JWT_SECRET_KEY environment variable is required")
 
 # JWT Configuration - Use environment variables
 access_token_expires = int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 3600))  # Default 1 hour

@@ -17,12 +17,16 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false, // Disable sourcemaps in production
+    chunkSizeWarningLimit: 1000, // Increase warning limit
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
-          ui: ['lucide-react', 'react-icons'],
+          ui: ['lucide-react', 'react-icons', 'framer-motion'],
+          charts: ['recharts'],
+          forms: ['react-hook-form', 'react-select', 'react-dropzone'],
+          utils: ['axios', 'date-fns', 'clsx', 'tailwind-merge'],
         },
       },
     },

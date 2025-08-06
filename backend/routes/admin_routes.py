@@ -10,6 +10,61 @@ import json
 
 admin_bp = Blueprint('admin', __name__)
 
+def get_analytics_data(time_range='week'):
+    """Helper function to get analytics data for export"""
+    from models.database import get_db
+    db = get_db()
+    
+    # Calculate date range
+    end_date = datetime.utcnow()
+    if time_range == 'week':
+        start_date = end_date - timedelta(days=7)
+    elif time_range == 'month':
+        start_date = end_date - timedelta(days=30)
+    elif time_range == 'year':
+        start_date = end_date - timedelta(days=365)
+    else:
+        start_date = end_date - timedelta(days=7)
+    
+    # Get user statistics
+    user_stats = list(db.users.aggregate([
+        {'$match': {'created_at': {'$gte': start_date, '$lte': end_date}}},
+        {'$group': {
+            '_id': None,
+            'total_users': {'$sum': 1},
+            'active_users': {'$sum': {'$cond': ['$is_active', 1, 0]}},
+            'avg_iq_score': {'$avg': '$iq_score'}
+        }}
+    ]))
+    
+    # Get quiz statistics
+    quiz_stats = list(db.quiz_attempts.aggregate([
+        {'$match': {'created_at': {'$gte': start_date, '$lte': end_date}}},
+        {'$group': {
+            '_id': '$quiz_id',
+            'total_attempts': {'$sum': 1},
+            'avg_score': {'$avg': '$score'},
+            'max_score': {'$max': '$score'}
+        }}
+    ]))
+    
+    # Get game statistics
+    game_stats = list(db.game_scores.aggregate([
+        {'$match': {'created_at': {'$gte': start_date, '$lte': end_date}}},
+        {'$group': {
+            '_id': '$game_type',
+            'total_games': {'$sum': 1},
+            'avg_score': {'$avg': '$score'},
+            'max_score': {'$max': '$score'}
+        }}
+    ]))
+    
+    return {
+        'user_stats': user_stats,
+        'quiz_stats': quiz_stats,
+        'game_stats': game_stats
+    }
+
 # User Management Routes
 @admin_bp.route('/users', methods=['GET'])
 @admin_required
@@ -658,16 +713,44 @@ def get_analytics():
 def export_analytics():
     """Export analytics data"""
     try:
-        format_type = request.args.get('format', 'pdf')
+        format_type = request.args.get('format', 'excel')
         time_range = request.args.get('timeRange', 'week')
         
-        # TODO: Implement actual export functionality
-        # This should generate real PDF/Excel files with analytics data
+        # Get analytics data
+        analytics_data = get_analytics_data(time_range)
         
-        return jsonify({
-            'success': False,
-            'message': f'{format_type.upper()} export functionality not implemented yet'
-        }), 501  # Not Implemented
+        if format_type.lower() == 'excel':
+            # Generate Excel file
+            import pandas as pd
+            from io import BytesIO
+            from datetime import datetime
+            
+            # Create Excel writer
+            output = BytesIO()
+            with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                # User statistics
+                pd.DataFrame(analytics_data.get('user_stats', [])).to_excel(writer, sheet_name='User Statistics', index=False)
+                
+                # Quiz performance
+                pd.DataFrame(analytics_data.get('quiz_stats', [])).to_excel(writer, sheet_name='Quiz Performance', index=False)
+                
+                # Game statistics
+                pd.DataFrame(analytics_data.get('game_stats', [])).to_excel(writer, sheet_name='Game Statistics', index=False)
+            
+            output.seek(0)
+            
+            from flask import send_file
+            return send_file(
+                output,
+                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                as_attachment=True,
+                download_name=f'tnca_analytics_{time_range}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+            )
+        else:
+            return jsonify({
+                'success': False,
+                'message': f'{format_type.upper()} export format not supported. Use "excel" format.'
+            }), 400
             
     except Exception as e:
         return jsonify({

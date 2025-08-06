@@ -1,59 +1,46 @@
 # TNCA & Cubeskool Iqualizer
 
-A gamified, animated web application for Tamil Nadu Cube Association (TNCA) & Cubeskool, featuring IQ challenges, interactive quizzes, performance tracking, and comprehensive admin controls.
+A comprehensive IQ testing and gaming platform with real-time analytics, user management, and interactive features.
 
-## 🚀 Features
+## 🚀 Quick Deploy
 
-### For Users (Admin-Created Accounts)
-- Interactive IQ quizzes with real-time feedback
-- Cube-based interactive games
-- Real-time IQ score tracking and improvement graphs
-- Leaderboard comparison with peers
-- Performance badges (Bronze → Gold Cubist)
-- Gamified dashboard with animations
-- Mobile-responsive design
+### Backend (Render)
+1. Deploy to [Render.com](https://render.com)
+2. Use build command: `pip install -r requirements.txt`
+3. Use start command: `gunicorn --config gunicorn_config.py wsgi:app`
+4. Add environment variables from `backend/RENDER_ENV_FINAL.txt`
 
-### For Admins
-- Secure user management (create, edit, delete users)
-- Quiz creation and management (text and image support)
-- Performance analytics and reporting
-- Leaderboard controls
-- Content management
-- Export functionality (PDF/Excel)
+### Frontend (Vercel)
+1. Deploy to [Vercel.com](https://vercel.com)
+2. Set root directory to `frontend`
+3. Framework preset: `Vite`
+4. Add environment variable: `VITE_API_URL=https://your-backend.onrender.com/api`
 
-## 🛠️ Tech Stack
+## 🔧 Tech Stack
 
-- **Frontend:** ReactJS + Vite + Tailwind CSS
-- **Backend:** Flask (Python)
-- **Database:** MongoDB
-- **Authentication:** JWT-based
-- **Theme:** Classic colors with rich animations
+- **Backend**: Flask, MongoDB, JWT Authentication
+- **Frontend**: React, Vite, Tailwind CSS
+- **Real-time**: WebSocket, Socket.IO
+- **Deployment**: Render (Backend), Vercel (Frontend)
 
-## 📱 Responsive Design
+## 📁 Project Structure
 
-Fully mobile and desktop responsive with modern, gamified UI.
+```
+TNCA/
+├── backend/          # Flask API server
+├── frontend/         # React application
+└── README.md         # This file
+```
 
-## 🔐 Security
+## 🔐 Environment Variables
 
-- Admin-only user creation
-- JWT-based authentication
-- Role-based access control
-- No public sign-up
+Copy environment variables from `backend/RENDER_ENV_FINAL.txt` to your Render dashboard.
 
-## 🎮 Gamification
+## 🎯 Features
 
-- Animated badges and progress indicators
-- Interactive leaderboards
-- Real-time score tracking
-- Performance heatmaps
-
-## 📊 Analytics
-
-- IQ calculation using proper formulas
-- Performance tracking over time
-- Detailed reporting and insights
-- Export capabilities
-
----
-
-*Built for Tamil Nadu Cube Association & Cubeskool* 
+- Interactive IQ quizzes
+- Real-time gaming
+- User analytics
+- Admin dashboard
+- Developer tools
+- Export functionality 
