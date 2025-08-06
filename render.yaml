@@ -3,6 +3,7 @@ services:
     name: tnca-iq-platform-backend
     env: python
     plan: starter
+    rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn --config gunicorn_config.py wsgi:app
     envVars:
